@@ -43,10 +43,11 @@ body {
 }
 
 .left-panel {
-  display: flex;
-  flex-direction: column;
+  /* Switch to grid to easily center logo between last-called and controls */
+  display: grid;
+  grid-template-rows: auto auto 1fr auto; /* brand, last-called, spacer (for logo), controls */
   gap: 1.2rem;
-  min-height: 0; /* allow flex children to shrink */
+  min-height: 0; /* allow children to shrink if needed */
 }
 
 .right-panel {
@@ -96,7 +97,8 @@ h1 {
   aspect-ratio: 1 / 1;
   background: var(--color-white);
   border-radius: 50%;
-  margin: 0 auto 0.25rem;
+  /* Center the logo horizontally and vertically within the middle (1fr) row */
+  place-self: center;
   box-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
   overflow: hidden; /* ensure the image stays within the circle */
 }
@@ -106,7 +108,6 @@ h1 {
   display: flex;
   gap: 1rem;
   justify-content: center; /* center the reset button horizontally */
-  margin-top: auto; /* stick to the bottom of the left panel */
 }
 
 button.reset-btn {
