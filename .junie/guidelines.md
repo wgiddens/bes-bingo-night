@@ -22,47 +22,9 @@ These notes capture project-specific knowledge for operating, developing, and te
 
 #### Testing information
 
-This repo does not include a persistent test framework by design. For quick verification and future regression checks, you can run Vitest on demand (ephemerally) without committing additional tooling files. This keeps the repo lean while still providing a repeatable path to test.
+This repo does not include a persistent test framework by design. 
 
-- One-off (ephemeral) test runs with Vitest
-  - Create a temporary test file under `tests/` (example below).
-  - Run: `npx -y vitest run`
-  - After you’re done, delete the temporary test files.
-
-- Verified example (executed successfully when writing this guide)
-  1) Create `tests/smoke.test.js` with:
-  ```js
-  import { test, expect } from 'vitest';
-
-  test('math still works', () => {
-    expect(2 + 2).toBe(4);
-  });
-  ```
-  2) Run the tests:
-  ```bash
-  npx -y vitest run
-  ```
-  3) Expected output (abbreviated):
-  ```
-   RUN  v4.x.x /path/to/bingo
-   ✓ tests/smoke.test.js (1 test)
-     ✓ math still works
-   Test Files  1 passed (1)
-        Tests  1 passed (1)
-  ```
-  4) Remove the file afterward to keep the repo clean:
-  ```bash
-  rm tests/smoke.test.js
-  ```
-
-- Adding new tests (guidance)
-  - Pure logic: Node environment (Vitest default) is sufficient; colocate under `tests/` or `src/**/__tests__` with a `*.test.{js,jsx}` suffix.
-  - Component tests (JSX): Use jsdom. With ephemeral Vitest, pass `--environment jsdom`:
-    ```bash
-    npx -y vitest run --environment jsdom
-    ```
-    For more involved component tests, consider adding (temporarily) `@testing-library/react` and a minimal `vitest.config.ts` with `environment: 'jsdom'`—but do not commit those unless we decide to standardize tests.
-  - ESLint is already configured (flat) for JSX; tests will be linted by `npm run lint` as long as they match the file globs.
+You can use the playwright action to open the app in a browser. The app is available at http://localhost:5173/.
 
 #### Additional development information
 
@@ -99,3 +61,48 @@ This repo does not include a persistent test framework by design. For quick veri
 - [ ] Click a few numbers to confirm the highlight and “Last Number Called” updates (e.g., B 7, I 20).
 - [ ] Test the Reset flow and ensure accidental clicks are easy to undo.
 - [ ] Disable sleep/screensaver on the host device.
+
+---
+
+### Junie Runbook: Visual verification at 1920×1080 (required)
+
+For layout validation, only check the fullscreen smartboard scenario at 1920×1080. Use the built‑in Playwright tools as follows:
+
+1) Navigate to the local dev server
+   - `mcp_playwright_browser_navigate` → `http://localhost:5173/`
+
+2) Set the viewport to 1920×1080
+   - `mcp_playwright_browser_resize` → `{ width: 1920, height: 1080 }`
+
+3) Verify there is no vertical scrolling and the board fills the right panel
+   - Call `mcp_playwright_browser_evaluate` with the function below. Expect `hasScrollbar: false`, and both `.right-panel` and `.bingo-board` to have equal `clientHeight` and `scrollHeight`.
+
+```js
+() => {
+  const de = document.documentElement;
+  const body = document.body;
+  const board = document.querySelector('.bingo-board');
+  const right = document.querySelector('.right-panel');
+  const cols = board ? Array.from(board.children) : [];
+  const counts = cols.map((c) => c.children.length);
+  return {
+    viewport: { w: window.innerWidth, h: window.innerHeight },
+    hasScrollbar: de.scrollHeight > de.clientHeight || body.scrollHeight > body.clientHeight,
+    right: right ? { clientH: right.clientHeight, scrollH: right.scrollHeight } : null,
+    board: board ? { clientH: board.clientHeight, scrollH: board.scrollHeight } : null,
+    columns: counts.length,
+    perColumnChildren: counts,
+    allColumnsHave16: counts.length === 5 && counts.every(n => n === 16),
+  };
+}
+```
+
+Pass criteria at 1920×1080
+- `hasScrollbar` is `false`.
+- `.right-panel.clientH === .right-panel.scrollH`.
+- `.bingo-board.clientH === .bingo-board.scrollH`.
+- `columns === 5` and `allColumnsHave16 === true` (1 header + 15 number cells per column).
+
+Notes
+- Do not check other resolutions unless explicitly asked. The authoritative verification target is 1920×1080.
+- If any check fails, adjust `src/index.css` but keep the two‑column, no‑scroll contract.
