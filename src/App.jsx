@@ -1,0 +1,81 @@
+import { useState, useCallback } from 'react'
+import './index.css';
+import Board from './Board.jsx';
+import Modal from './Modal.jsx';
+
+function App() {
+  const [calledNumbers, setCalledNumbers] = useState(new Set());
+  const [showResetModal, setShowResetModal] = useState(false);
+  const [lastCalled, setLastCalled] = useState(null);
+
+  const toggleNumber = useCallback((number) => {
+    setCalledNumbers(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(number)) {
+        newSet.delete(number);
+        // If we uncheck the last called number, we don't easily know the previous one 
+        // without a history stack, but for simple bingo, just clearing it if it matches is fine.
+        if (lastCalled === number) {
+          setLastCalled(null);
+        }
+      } else {
+        newSet.add(number);
+        setLastCalled(number);
+      }
+      return newSet;
+    });
+  }, [lastCalled]);
+
+  const openResetModal = () => {
+    setShowResetModal(true);
+  };
+
+  const confirmReset = () => {
+    setCalledNumbers(new Set());
+    setLastCalled(null);
+    setShowResetModal(false);
+  };
+
+  const cancelReset = () => {
+    setShowResetModal(false);
+  };
+
+  const getNumberLetter = (n) => {
+    if (n <= 15) return 'B';
+    if (n <= 30) return 'I';
+    if (n <= 45) return 'N';
+    if (n <= 60) return 'G';
+    return 'O';
+  };
+
+  return (
+    <>
+      <header>
+        <h1>Brooklet Elementary School</h1>
+        <div className="subheading">The BESt Bingo Night</div>
+      </header>
+
+      <div className="last-called-container">
+        <span className="last-called-label">Last Number Called</span>
+        <div className="big-number">
+          {lastCalled ? `${getNumberLetter(lastCalled)} ${lastCalled}` : '--'}
+        </div>
+      </div>
+
+      <div className="controls">
+        <button className="reset-btn" onClick={openResetModal}>Reset Board</button>
+      </div>
+
+      <Board calledNumbers={calledNumbers} toggleNumber={toggleNumber} />
+      <Modal
+        isOpen={showResetModal}
+        title="Confirm Reset"
+        message="Are you sure you want to reset the board?"
+        onConfirm={confirmReset}
+        onCancel={cancelReset}
+      />
+    </>
+  )
+}
+
+export default App
