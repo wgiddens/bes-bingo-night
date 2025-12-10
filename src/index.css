@@ -82,10 +82,23 @@ h1 {
 /* Logo sizing responsive to panel width */
 .logo {
   display: block;
-  width: clamp(120px, 35vw, 220px);
-  height: auto;
+  width: 80%;
+  height: 80%;
+  object-fit: contain;
+  margin: 0 auto;
+}
+
+/* Circular white frame for mascot logo */
+.logo-circle {
+  display: grid;
+  place-items: center;
+  width: clamp(140px, 35vw, 240px);
+  aspect-ratio: 1 / 1;
+  background: var(--color-white);
+  border-radius: 50%;
   margin: 0 auto 0.25rem;
-  filter: drop-shadow(0 2px 0 rgba(0,0,0,0.35));
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
+  overflow: hidden; /* ensure the image stays within the circle */
 }
 
 /* Controls */

@@ -64,7 +64,9 @@ function App() {
           </div>
         </div>
 
-        <img src={logo} alt="Brooklet Elementary School Yellow Jackets logo" className="logo" />
+        <div className="logo-circle">
+          <img src={logo} alt="Brooklet Elementary School Yellow Jackets logo" className="logo" />
+        </div>
 
         <div className="controls">
           <button className="reset-btn" onClick={openResetModal}>Reset Board</button>
