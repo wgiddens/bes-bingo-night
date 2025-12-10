@@ -1,16 +1,39 @@
-# React + Vite
+# PTO Bingo Board (Vite + React)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is a single‑page app for displaying called Bingo numbers on a smartboard during PTO Bingo Night. Built with Vite 5 and React 19.
 
-Currently, two official plugins are available:
+## Local development
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Dev server: `npm run dev` → open the printed `http://localhost:5173/`
+- Build: `npm run build` → outputs `dist/`
+- Preview prod build: `npm run preview`
+- Lint: `npm run lint`
 
-## React Compiler
+See `src/index.css` for layout and typography adjustments.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Deploying to GitLab Pages
 
-## Expanding the ESLint configuration
+This repository includes a `.gitlab-ci.yml` that builds and publishes the static site to GitLab Pages.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+How it works:
+- On the default branch, the CI job runs `npm ci` and `npm run build`.
+- Build output from `dist/` is copied to `public/` for Pages artifacts.
+- A `404.html` copy of `index.html` is created so client‑side routing (if added later) works on deep links.
+- Vite `base` is set automatically during CI using `CI_PAGES_URL` or `CI_PROJECT_NAME`, so the app works at `https://<user-or-group>.gitlab.io/<project-name>/` and also at root pages `https://<user-or-group>.gitlab.io/` when applicable.
+
+Steps to publish:
+1) Push to the default branch (e.g., `main`) on GitLab.
+2) Wait for the `pages` job to complete in CI.
+3) Visit Settings → Pages in your GitLab project to see the live URL.
+
+Notes:
+- If you rename the project, the Pages path changes. No code changes are needed because `vite.config.js` derives the base path from CI variables.
+- For custom domains, set up the domain in GitLab Pages settings; no app changes required.
+
+## Smartboard checklist (1920×1080)
+
+- Open in fullscreen; verify all five BINGO columns are fully visible without vertical scroll.
+- Click numbers to confirm highlighting and "Last Number Called" updates.
+- Test Reset flow for accidental clicks.
+
+For more details, see `.junie/guidelines.md`.
