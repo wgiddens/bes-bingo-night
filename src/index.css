@@ -81,9 +81,10 @@ h1 {
 
 /* Logo sizing responsive to panel width */
 .logo {
+  display: block;
   width: clamp(120px, 35vw, 220px);
   height: auto;
-  margin-bottom: 0.25rem;
+  margin: 0 auto 0.25rem;
   filter: drop-shadow(0 2px 0 rgba(0,0,0,0.35));
 }
 
@@ -91,6 +92,8 @@ h1 {
 .controls {
   display: flex;
   gap: 1rem;
+  justify-content: center; /* center the reset button horizontally */
+  margin-top: auto; /* stick to the bottom of the left panel */
 }
 
 button.reset-btn {

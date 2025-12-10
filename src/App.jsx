@@ -53,7 +53,6 @@ function App() {
     <div className="app-shell">
       <aside className="left-panel">
         <header className="brand">
-          <img src={logo} alt="Brooklet Elementary School Yellow Jackets logo" className="logo" />
           <h1>Brooklet Elementary School</h1>
           <div className="subheading">The BESt Bingo Night</div>
         </header>
@@ -64,6 +63,8 @@ function App() {
             {lastCalled ? `${getNumberLetter(lastCalled)} ${lastCalled}` : '--'}
           </div>
         </div>
+
+        <img src={logo} alt="Brooklet Elementary School Yellow Jackets logo" className="logo" />
 
         <div className="controls">
           <button className="reset-btn" onClick={openResetModal}>Reset Board</button>
