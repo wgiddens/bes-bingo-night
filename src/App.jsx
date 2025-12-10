@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react'
 import './index.css';
 import Board from './Board.jsx';
 import Modal from './Modal.jsx';
+import logo from './assets/logo.png';
 
 function App() {
   const [calledNumbers, setCalledNumbers] = useState(new Set());
@@ -52,7 +53,7 @@ function App() {
     <div className="app-shell">
       <aside className="left-panel">
         <header className="brand">
-          <img src="/vite.svg" alt="Brooklet Elementary School logo" className="logo" />
+          <img src={logo} alt="Brooklet Elementary School Yellow Jackets logo" className="logo" />
           <h1>Brooklet Elementary School</h1>
           <div className="subheading">The BESt Bingo Night</div>
         </header>
