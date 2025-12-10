@@ -148,6 +148,7 @@ button.reset-btn:hover {
   height: 100%;
   background: var(--card-bg);
   padding: 0.8rem;
+  box-sizing: border-box; /* ensure padding doesn't cause horizontal overflow */
   border-radius: var(--border-radius);
   backdrop-filter: blur(10px);
   overflow: hidden;
