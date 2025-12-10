@@ -35,7 +35,8 @@ body {
   width: 100%;
   box-sizing: border-box;
   display: grid;
-  grid-template-columns: clamp(260px, 28vw, 420px) 1fr;
+  /* Slightly wider left panel to prevent wrapping of the big last-called number on high-res displays */
+  grid-template-columns: clamp(260px, 28vw, 560px) 1fr;
   grid-auto-rows: 1fr;
   gap: 1.2rem;
   padding: 1.2rem;
@@ -154,6 +155,8 @@ button.reset-btn:hover {
   line-height: 1;
   color: var(--color-white);
   text-shadow: 4px 4px 0 var(--color-black);
+  /* Prevent the letter and number from breaking onto two lines */
+  white-space: nowrap;
 }
 
 /* Board Layout */

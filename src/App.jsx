@@ -60,7 +60,7 @@ function App() {
         <div className="last-called-container">
           <span className="last-called-label">Last Number Called</span>
           <div className="big-number">
-            {lastCalled ? `${getNumberLetter(lastCalled)} ${lastCalled}` : '--'}
+            {lastCalled ? `${getNumberLetter(lastCalled)}\u00A0${lastCalled}` : '--'}
           </div>
         </div>
 
