@@ -148,7 +148,8 @@ button.reset-btn:hover {
 }
 
 .big-number {
-  font-size: clamp(3rem, 9vh, 9rem);
+  /* Make the last-called number larger for improved visibility */
+  font-size: clamp(3.5rem, 15vh, 15rem);
   font-weight: 900;
   line-height: 1;
   color: var(--color-white);
