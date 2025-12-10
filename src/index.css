@@ -13,6 +13,10 @@
   --border-radius: 12px;
 }
 
+html, body, #root {
+  height: 100%;
+}
+
 body {
   margin: 0;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
@@ -23,11 +27,35 @@ body {
 
 #root {
   width: 100%;
-  padding: 2rem;
+  height: 100%;
+}
+
+/* App shell: two columns, full height, no scrolling */
+.app-shell {
+  height: 100vh;
+  width: 100%;
   box-sizing: border-box;
+  display: grid;
+  grid-template-columns: clamp(260px, 28vw, 420px) 1fr;
+  grid-auto-rows: 1fr;
+  gap: 1.2rem;
+  padding: 1.2rem;
+  overflow: hidden;
+}
+
+.left-panel {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  gap: 1.2rem;
+  min-height: 0; /* allow flex children to shrink */
+}
+
+.right-panel {
+  min-width: 0; /* prevent overflow due to grid */
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 /* Typography */
@@ -44,12 +72,16 @@ h1 {
   font-size: 1.5rem;
   font-weight: 300;
   opacity: 0.9;
-  margin-bottom: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
 }
 
 /* Controls */
 .controls {
-  margin-bottom: 2rem;
   display: flex;
   gap: 1rem;
 }
@@ -76,9 +108,8 @@ button.reset-btn:hover {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 3rem;
   background: rgba(0, 0, 0, 0.3);
-  padding: 2rem 4rem;
+  padding: 1.2rem;
   border-radius: var(--border-radius);
   border: 1px solid var(--color-yellow);
   box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
@@ -93,7 +124,7 @@ button.reset-btn:hover {
 }
 
 .big-number {
-  font-size: 8rem;
+  font-size: clamp(3rem, 9vh, 9rem);
   font-weight: 900;
   line-height: 1;
   color: var(--color-white);
@@ -101,34 +132,33 @@ button.reset-btn:hover {
 }
 
 /* Board Layout */
-/* Ensure the board fits within the viewport */
+/* Right grid fills panel height with no scrolling */
 .bingo-board {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 1.5rem;
+  gap: 0.8rem;
   width: 100%;
-  max-width: 1200px;
+  height: 100%;
   background: var(--card-bg);
-  padding: 2rem;
+  padding: 0.8rem;
   border-radius: var(--border-radius);
   backdrop-filter: blur(10px);
-  max-height: calc(100vh - 200px);
-  /* adjust for header and controls */
-  overflow-y: hidden;
+  overflow: hidden;
 }
 
 .column {
-  display: flex;
-  flex-direction: column;
-  gap: 0.8rem;
+  display: grid;
+  grid-template-rows: auto repeat(15, 1fr);
+  gap: 0.6rem;
+  min-height: 0;
 }
 
 .column-header {
-  font-size: 3rem;
+  font-size: clamp(1.6rem, 5vh, 3rem);
   font-weight: 900;
   text-align: center;
   color: var(--color-yellow);
-  margin-bottom: 1rem;
+  margin-bottom: 0.2rem;
   text-shadow: 2px 2px 0 var(--color-black);
 }
 
@@ -136,29 +166,27 @@ button.reset-btn:hover {
 .number-cell {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.3);
-  font-size: clamp(1rem, 1.5vw, 1.5rem);
-  font-weight: 700;
-  padding: clamp(0.5rem, 1vw, 0.8rem);
-  text-align: center;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: clamp(0.9rem, 2.2vh, 1.4rem);
+  font-weight: 800;
+  display: grid;
+  place-items: center;
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.15s ease-out;
+  transition: transform 0.12s ease-out, background 0.12s ease-out, color 0.12s ease-out;
   user-select: none;
+  min-height: 0;
 }
 
 .number-cell:hover {
   background: rgba(255, 255, 255, 0.15);
-  transform: scale(1.05);
 }
 
 .number-cell.active {
   background: var(--color-yellow);
   color: var(--color-black);
   border-color: var(--color-yellow);
-  box-shadow: 0 0 15px var(--color-yellow);
-  transform: scale(1.1);
-  z-index: 10;
+  box-shadow: 0 0 10px var(--color-yellow);
 }
 
 .modal-overlay {

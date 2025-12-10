@@ -49,24 +49,30 @@ function App() {
   };
 
   return (
-    <>
-      <header>
-        <h1>Brooklet Elementary School</h1>
-        <div className="subheading">The BESt Bingo Night</div>
-      </header>
+    <div className="app-shell">
+      <aside className="left-panel">
+        <header className="brand">
+          <img src="/vite.svg" alt="Brooklet Elementary School logo" className="logo" />
+          <h1>Brooklet Elementary School</h1>
+          <div className="subheading">The BESt Bingo Night</div>
+        </header>
 
-      <div className="last-called-container">
-        <span className="last-called-label">Last Number Called</span>
-        <div className="big-number">
-          {lastCalled ? `${getNumberLetter(lastCalled)} ${lastCalled}` : '--'}
+        <div className="last-called-container">
+          <span className="last-called-label">Last Number Called</span>
+          <div className="big-number">
+            {lastCalled ? `${getNumberLetter(lastCalled)} ${lastCalled}` : '--'}
+          </div>
         </div>
-      </div>
 
-      <div className="controls">
-        <button className="reset-btn" onClick={openResetModal}>Reset Board</button>
-      </div>
+        <div className="controls">
+          <button className="reset-btn" onClick={openResetModal}>Reset Board</button>
+        </div>
+      </aside>
 
-      <Board calledNumbers={calledNumbers} toggleNumber={toggleNumber} />
+      <section className="right-panel">
+        <Board calledNumbers={calledNumbers} toggleNumber={toggleNumber} />
+      </section>
+
       <Modal
         isOpen={showResetModal}
         title="Confirm Reset"
@@ -74,7 +80,7 @@ function App() {
         onConfirm={confirmReset}
         onCancel={cancelReset}
       />
-    </>
+    </div>
   )
 }
 
