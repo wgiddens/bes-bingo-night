@@ -28,6 +28,15 @@ Notes:
 - Renaming the repository changes the Pages path; no code changes are needed.
 - For a custom domain, configure it in **Settings → Pages**; no app changes required.
 
+## Offline use
+
+The venue's internet is unreliable, so the board works offline once it has been opened online one time:
+
+- Before the event, open the board while online on the same computer and browser that will drive the TV. A service worker caches the app and its fonts.
+- From then on, it loads and reloads with no connection. Called numbers are saved in the browser and survive a reload.
+- After a new deploy, the update downloads in the background and appears on the next reload. Push changes well before the event, then reload the board once or twice while online.
+- Service workers only run on `https` or `localhost`. Opening `npm run preview` through a LAN address (`http://192.168…`) won't cache anything.
+
 ## Smartboard checklist (1920×1080)
 
 - Open in fullscreen; verify all five BINGO columns are fully visible without vertical scroll.
