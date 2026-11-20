@@ -2,14 +2,6 @@
 import React from 'react';
 
 function Board({ calledNumbers, toggleNumber }) {
-  const getNumberLetter = (n) => {
-    if (n <= 15) return 'B';
-    if (n <= 30) return 'I';
-    if (n <= 45) return 'N';
-    if (n <= 60) return 'G';
-    return 'O';
-  };
-
   return (
     <main className="bingo-board">
       {['B', 'I', 'N', 'G', 'O'].map((letter, colIndex) => {
