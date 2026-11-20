@@ -32,4 +32,4 @@ Notes:
 - Click numbers to confirm highlighting and "Last Number Called" updates.
 - Test Reset flow for accidental clicks.
 
-For more details, see `.junie/guidelines.md`.
+For architecture notes and the 1920×1080 layout check, see `CLAUDE.md`.
