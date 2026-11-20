@@ -6,6 +6,12 @@
       "runtimeExecutable": "mise",
       "runtimeArgs": ["exec", "--", "npm", "run", "dev", "--", "--port", "5173", "--strictPort"],
       "port": 5173
+    },
+    {
+      "name": "preview",
+      "runtimeExecutable": "mise",
+      "runtimeArgs": ["exec", "--", "npm", "run", "preview", "--", "--port", "4173", "--strictPort"],
+      "port": 4173
     }
   ]
 }

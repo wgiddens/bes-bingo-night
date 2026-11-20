@@ -19,6 +19,7 @@ Bingo caller board for Brooklet Elementary's PTO Bingo Night. An operator clicks
 - Unchecking the number shown as "Last Number Called" resets it to `--`. There's intentionally no call history.
 - State is in memory only, so a reload clears the board. If persistence is ever added, make it opt-in and keep Reset obvious.
 - Keep the operator UI minimal so nothing distracts during a live event.
+- After one online visit, the board must load and reload with no internet: a service worker (`vite-plugin-pwa`) precaches the build, and the fonts are self-hosted. Don't add runtime requests to other hosts (CDNs, web fonts, analytics).
 
 ## Deployment
 
