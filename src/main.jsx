@@ -1,5 +1,8 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import '@fontsource/cinzel-decorative/latin-900.css'
+import '@fontsource/fredoka/latin-600.css'
+import '@fontsource/fredoka/latin-700.css'
 import './index.css'
 import App from './App.jsx'
 
