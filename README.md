@@ -4,6 +4,8 @@ This is a single‑page app for displaying called Bingo numbers on a smartboard 
 
 ## Local development
 
+[mise](https://mise.jdx.dev) installs the Node version from `mise.toml` (current LTS, matching the Pages workflow): run `mise install`, then `npm ci`.
+
 - Dev server: `npm run dev` → open the printed `http://localhost:5173/`
 - Build: `npm run build` → outputs `dist/`
 - Preview prod build: `npm run preview`
