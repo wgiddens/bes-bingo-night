@@ -11,24 +11,20 @@ This is a single‑page app for displaying called Bingo numbers on a smartboard 
 
 See `src/index.css` for layout and typography adjustments.
 
-## Deploying to GitLab Pages
+## Deploying to GitHub Pages
 
-This repository includes a `.gitlab-ci.yml` that builds and publishes the static site to GitLab Pages.
+`.github/workflows/pages.yml` builds and publishes the static site to GitHub Pages on every push to `main` (or manually via **Run workflow**).
 
 How it works:
-- On the default branch, the CI job runs `npm ci` and `npm run build`.
-- Build output from `dist/` is copied to `public/` for Pages artifacts.
+- The workflow runs `npm ci` and `npm run build`, then uploads `dist/` as the Pages artifact.
 - A `404.html` copy of `index.html` is created so client‑side routing (if added later) works on deep links.
-- Vite `base` is set automatically during CI using `CI_PAGES_URL` or `CI_PROJECT_NAME`, so the app works at `https://<user-or-group>.gitlab.io/<project-name>/` and also at root pages `https://<user-or-group>.gitlab.io/` when applicable.
+- Vite `base` comes from the `BASE_PATH` the workflow reads from `actions/configure-pages`, so the app works at `https://<user>.github.io/<repo>/` and on a custom domain at `/`.
 
-Steps to publish:
-1) Push to the default branch (e.g., `main`) on GitLab.
-2) Wait for the `pages` job to complete in CI.
-3) Visit Settings → Pages in your GitLab project to see the live URL.
+One-time setup: in the repository's **Settings → Pages**, set **Source** to **GitHub Actions**.
 
 Notes:
-- If you rename the project, the Pages path changes. No code changes are needed because `vite.config.js` derives the base path from CI variables.
-- For custom domains, set up the domain in GitLab Pages settings; no app changes required.
+- Renaming the repository changes the Pages path; no code changes are needed.
+- For a custom domain, configure it in **Settings → Pages**; no app changes required.
 
 ## Smartboard checklist (1920×1080)
 
