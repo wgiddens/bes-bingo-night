@@ -1,10 +1,13 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import './index.css';
 import Board from './Board.jsx';
 import Modal from './Modal.jsx';
-import logo from './assets/logo.png';
+import Castle from './Castle.jsx';
+import LastCalled from './LastCalled.jsx';
+import { createMagicEffects } from './magicEffects.js';
 
 const STORAGE_KEY = 'bingo-game';
+const JUST_LANDED_MS = 1100;
 
 function loadSavedGame() {
   try {
@@ -16,40 +19,95 @@ function loadSavedGame() {
   return { calledNumbers: [], lastCalled: null };
 }
 
+function without(set, value) {
+  const next = new Set(set);
+  next.delete(value);
+  return next;
+}
+
 function App() {
   const [calledNumbers, setCalledNumbers] = useState(() => new Set(loadSavedGame().calledNumbers));
   const [showResetModal, setShowResetModal] = useState(false);
   const [lastCalled, setLastCalled] = useState(() => loadSavedGame().lastCalled);
+  const [incoming, setIncoming] = useState(() => new Set());
+  const [justLanded, setJustLanded] = useState(null);
+  const [latestCall, setLatestCall] = useState(null);
+
+  const skyCanvasRef = useRef(null);
+  const fxCanvasRef = useRef(null);
+  const leftPanelRef = useRef(null);
+  const castleRef = useRef(null);
+  const lastCalledBoxRef = useRef(null);
+  const digitsRef = useRef(null);
+  const cellRefs = useRef(new Map());
+  const effectsRef = useRef(null);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ calledNumbers: [...calledNumbers], lastCalled }));
   }, [calledNumbers, lastCalled]);
 
-  const toggleNumber = useCallback((number) => {
-    setCalledNumbers(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(number)) {
-        newSet.delete(number);
-        // If we uncheck the last called number, we don't easily know the previous one 
-        // without a history stack, but for simple bingo, just clearing it if it matches is fine.
-        if (lastCalled === number) {
-          setLastCalled(null);
-        }
-      } else {
-        newSet.add(number);
-        setLastCalled(number);
-      }
-      return newSet;
+  useEffect(() => {
+    const effects = createMagicEffects({
+      skyCanvas: skyCanvasRef.current,
+      fxCanvas: fxCanvasRef.current,
+      castle: castleRef.current,
+      leftPanel: leftPanelRef.current,
     });
-  }, [lastCalled]);
+    effectsRef.current = effects;
+    return () => effects.destroy();
+  }, []);
+
+  useEffect(() => {
+    if (!latestCall) return;
+    const { number } = latestCall;
+    const effects = effectsRef.current;
+    const box = lastCalledBoxRef.current;
+    const big = digitsRef.current.parentElement;
+    const digits = digitsRef.current;
+    const boxRect = box.getBoundingClientRect();
+    // Layout offsets rather than getBoundingClientRect, because the number is mid scale-in animation.
+    const from = {
+      x: boxRect.left + box.clientLeft + big.offsetLeft + digits.offsetLeft + digits.offsetWidth / 2,
+      y: boxRect.top + box.clientTop + big.offsetTop + big.offsetHeight / 2,
+    };
+    const cell = cellRefs.current.get(number);
+
+    effects.sprinkle(boxRect);
+    effects.launchComet(number, from, cell.getBoundingClientRect(), () => {
+      setIncoming(prev => without(prev, number));
+      setJustLanded(number);
+      setTimeout(() => setJustLanded(current => (current === number ? null : current)), JUST_LANDED_MS);
+      effects.burst(cell.getBoundingClientRect());
+      effects.celebrate();
+    });
+  }, [latestCall]);
+
+  const toggleNumber = (number) => {
+    if (calledNumbers.has(number)) {
+      setCalledNumbers(without(calledNumbers, number));
+      setIncoming(prev => without(prev, number));
+      effectsRef.current.cancelComet(number);
+      if (lastCalled === number) {
+        setLastCalled(null);
+      }
+      return;
+    }
+    setCalledNumbers(new Set(calledNumbers).add(number));
+    setLastCalled(number);
+    setIncoming(prev => new Set(prev).add(number));
+    setLatestCall({ number, id: (latestCall?.id ?? 0) + 1 });
+  };
 
   const openResetModal = () => {
     setShowResetModal(true);
   };
 
   const confirmReset = () => {
+    effectsRef.current.cancelAllComets();
     setCalledNumbers(new Set());
     setLastCalled(null);
+    setIncoming(new Set());
+    setJustLanded(null);
     setShowResetModal(false);
   };
 
@@ -57,32 +115,24 @@ function App() {
     setShowResetModal(false);
   };
 
-  const getNumberLetter = (n) => {
-    if (n <= 15) return 'B';
-    if (n <= 30) return 'I';
-    if (n <= 45) return 'N';
-    if (n <= 60) return 'G';
-    return 'O';
-  };
-
   return (
     <div className="app-shell">
-      <aside className="left-panel">
+      <canvas ref={skyCanvasRef} className="sky-canvas" />
+
+      <aside className="left-panel" ref={leftPanelRef}>
         <header className="brand">
           <h1>Brooklet Elementary School</h1>
           <div className="subheading">The BESt Bingo Night</div>
         </header>
 
-        <div className="last-called-container">
-          <span className="last-called-label">Last Number Called</span>
-          <div className="big-number">
-            {lastCalled ? `${getNumberLetter(lastCalled)}\u00A0${lastCalled}` : '--'}
-          </div>
-        </div>
+        <LastCalled
+          lastCalled={lastCalled}
+          callId={latestCall?.id ?? 0}
+          boxRef={lastCalledBoxRef}
+          digitsRef={digitsRef}
+        />
 
-        <div className="logo-circle">
-          <img src={logo} alt="Brooklet Elementary School Yellow Jackets logo" className="logo" />
-        </div>
+        <Castle ref={castleRef} />
 
         <div className="controls">
           <button className="reset-btn" onClick={openResetModal}>Reset Board</button>
@@ -90,8 +140,17 @@ function App() {
       </aside>
 
       <section className="right-panel">
-        <Board calledNumbers={calledNumbers} toggleNumber={toggleNumber} />
+        <Board
+          calledNumbers={calledNumbers}
+          incoming={incoming}
+          lastCalled={lastCalled}
+          justLanded={justLanded}
+          toggleNumber={toggleNumber}
+          cellRefs={cellRefs}
+        />
       </section>
+
+      <canvas ref={fxCanvasRef} className="fx-canvas" />
 
       <Modal
         isOpen={showResetModal}
