@@ -1,13 +1,29 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import './index.css';
 import Board from './Board.jsx';
 import Modal from './Modal.jsx';
 import logo from './assets/logo.png';
 
+const STORAGE_KEY = 'bingo-game';
+
+function loadSavedGame() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    if (saved) return saved;
+  } catch {
+    // Corrupt or inaccessible storage: start a fresh game.
+  }
+  return { calledNumbers: [], lastCalled: null };
+}
+
 function App() {
-  const [calledNumbers, setCalledNumbers] = useState(new Set());
+  const [calledNumbers, setCalledNumbers] = useState(() => new Set(loadSavedGame().calledNumbers));
   const [showResetModal, setShowResetModal] = useState(false);
-  const [lastCalled, setLastCalled] = useState(null);
+  const [lastCalled, setLastCalled] = useState(() => loadSavedGame().lastCalled);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ calledNumbers: [...calledNumbers], lastCalled }));
+  }, [calledNumbers, lastCalled]);
 
   const toggleNumber = useCallback((number) => {
     setCalledNumbers(prev => {
